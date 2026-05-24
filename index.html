@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Media Hub</title>
+    <title>Discord Vault - Mobile Portal</title>
+    <!-- FontAwesome pour de jolies icônes néon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0a0a12;
+            --bg-color: #05050a;
+            --card-bg: rgba(13, 13, 25, 0.8);
             --neon-cyan: #00f3ff;
             --neon-pink: #ff007f;
             --neon-purple: #9d4edd;
             --text-color: #ffffff;
+            --text-muted: #8b8b9e;
         }
 
         * {
@@ -27,27 +31,151 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(157, 78, 221, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(0, 243, 255, 0.12) 0px, transparent 50%);
+            background-attachment: fixed;
         }
 
-        /* Simulation du format Mobile Container */
+        /* Container principal style smartphone */
         .mobile-container {
             width: 100%;
-            max-width: 412px; /* Taille standard d'un smartphone moderne */
-            background: rgba(15, 15, 30, 0.75);
+            max-width: 420px;
+            background: rgba(10, 10, 20, 0.85);
             border: 2px solid var(--neon-cyan);
-            border-radius: 24px;
-            padding: 25px 20px;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2),
-                        inset 0 0 15px rgba(0, 243, 255, 0.1);
-            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 25px 18px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2),
+                        inset 0 0 15px rgba(0, 243, 255, 0.05);
+            backdrop-filter: blur(15px);
+            margin: auto;
+            position: relative;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Header Néon */
+        /* --- ÉCRAN DE VERROUILLAGE (MOT DE PASSE) --- */
+        #lock-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #080811;
+            border-radius: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 30px 20px;
+            box-shadow: inset 0 0 30px rgba(255, 0, 127, 0.1);
+        }
+
+        .lock-icon {
+            font-size: 3.5rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            margin-bottom: 25px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .lock-title {
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 8px var(--neon-pink);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .lock-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            width: 100%;
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--neon-purple);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+            background: rgba(0, 243, 255, 0.02);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-purple);
+            font-size: 1.1rem;
+        }
+
+        .unlock-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.1);
+        }
+
+        .unlock-btn:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+            transform: scale(1.02);
+        }
+
+        .unlock-btn:active {
+            transform: scale(0.98);
+        }
+
+        .error-msg {
+            color: var(--neon-pink);
+            font-size: 0.85rem;
+            margin-top: 15px;
+            text-shadow: 0 0 5px rgba(255, 0, 127, 0.5);
+            display: none;
+            text-align: center;
+        }
+
+        /* --- EN-TÊTE PRINCIPAL --- */
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         h1 {
@@ -57,41 +185,44 @@
             color: #fff;
             text-shadow: 0 0 5px #fff,
                          0 0 10px var(--neon-pink),
-                         0 0 20px var(--neon-pink),
-                         0 0 40px var(--neon-pink);
-            animation: pulse 2s infinite alternate;
+                         0 0 20px var(--neon-pink);
+            animation: pulse 2.5s infinite alternate;
         }
 
         p.subtitle {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--neon-cyan);
             text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
-            margin-top: 8px;
+            margin-top: 6px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            font-weight: bold;
         }
 
-        /* Liste des médias */
-        #media-list {
-            display: flex;
+        /* --- ZONE CONTENU MEDIA --- */
+        #content-area {
+            display: none; /* Masqué par défaut jusqu'au déverrouillage */
             flex-direction: column;
-            gap: 18px;
+            gap: 15px;
+            flex-grow: 1;
         }
 
-        /* Cartes de liens style Néon */
+        /* Cartes de média révisées pour intégrer l'aperçu */
         .media-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--neon-purple);
-            border-radius: 12px;
-            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid rgba(157, 78, 221, 0.4);
+            border-radius: 14px;
+            padding: 12px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             text-decoration: none;
             color: inherit;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .media-card::before {
@@ -99,17 +230,18 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 4px;
+            width: 3px;
             height: 100%;
             background: var(--neon-purple);
-            box-shadow: 0 0 10px var(--neon-purple);
+            box-shadow: 0 0 8px var(--neon-purple);
+            transition: all 0.3s ease;
         }
 
         .media-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-            background: rgba(0, 243, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
+            background: rgba(15, 23, 42, 0.9);
         }
 
         .media-card:hover::before {
@@ -117,111 +249,360 @@
             box-shadow: 0 0 10px var(--neon-cyan);
         }
 
+        .media-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+            min-width: 0; /* Important pour le text-overflow */
+        }
+
         .media-tag {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            font-weight: bold;
+            font-weight: 800;
             color: var(--neon-pink);
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .media-title {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 500;
+            color: #e2e8f0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* Message de chargement / erreur */
-        .status-msg {
-            text-align: center;
-            color: #888;
-            font-style: italic;
+        /* --- ZONE D'APERÇU IMAGE/MÉDIA --- */
+        .preview-wrapper {
+            width: 55px;
+            height: 55px;
+            min-width: 55px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-fallback {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        /* Lecteur audio/vidéo rapide */
+        .video-overlay-icon {
+            position: absolute;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.6);
+            padding: 4px;
+            border-radius: 50%;
+            color: #fff;
+        }
+
+        /* --- LIGHTBOX (Lecteur plein écran interactif) --- */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 3, 7, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
             padding: 20px;
         }
 
-        /* Animation de pulsation pour le titre */
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 70vh;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .lightbox-caption {
+            margin-top: 15px;
+            color: #fff;
+            font-size: 0.9rem;
+            text-align: center;
+            max-width: 90%;
+            word-break: break-all;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .lightbox-close:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        /* Statuts & Chargements */
+        .status-msg {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 25px;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
         @keyframes pulse {
-            0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink); }
-            100% { text-shadow: 0 0 7px #fff, 0 0 15px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 50px var(--neon-pink); }
+            0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--neon-pink); }
+            100% { text-shadow: 0 0 10px #fff, 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
     </style>
 </head>
 <body>
 
     <div class="mobile-container">
+        <!-- ÉCRAN DE VERROUILLAGE -->
+        <div id="lock-screen">
+            <div class="lock-icon">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h2 class="lock-title">Vault d'accès</h2>
+            <p class="lock-subtitle">Entrer le code de déverrouillage</p>
+            
+            <div class="input-group">
+                <i class="fa-solid fa-key input-icon"></i>
+                <input type="password" id="passkey" class="password-input" placeholder="••••" maxlength="12" autofocus>
+            </div>
+
+            <button class="unlock-btn" onclick="checkPassword()">Accéder au Flux</button>
+            <div class="error-msg" id="error-message">Système verrouillé : Code incorrect</div>
+        </div>
+
+        <!-- EN-TÊTE PRINCIPAL (VISIBLE APRÈS CODE) -->
         <header>
             <h1>Discord Vault</h1>
-            <p class="subtitle">Media Stream</p>
+            <p class="subtitle"><i class="fa-solid fa-bolt"></i> Live Stream</p>
         </header>
 
-        <main id="media-list">
-            <div class="status-msg">Chargement des flux énergétiques...</div>
+        <!-- ZONE DE LISTE DES MÉDIAS -->
+        <main id="content-area">
+            <div class="status-msg">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Initialisation de la connexion sécurisée...
+            </div>
         </main>
     </div>
 
+    <!-- LIGHTBOX SÉCURISÉE (Pour voir l'image en grand sans quitter l'appli) -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
+        <img id="lightbox-img" class="lightbox-content" src="" alt="Aperçu grand format">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+
     <script>
-        // Fonction pour charger et lire le fichier .txt
+        // === CONFIGURATION DU MOT DE PASSE ===
+        // Change ce mot de passe par ce que tu veux :
+        const SITE_PASSWORD = "1234"; 
+
+        // Initialisation de l'affichage
+        document.getElementById('passkey').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // Vérification automatique au cas où l'utilisateur est déjà connecté sur cette session
+        if (sessionStorage.getItem('vault_authenticated') === 'true') {
+            unlockVault();
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passkey').value;
+            const error = document.getElementById('error-message');
+            
+            if (input === SITE_PASSWORD) {
+                sessionStorage.setItem('vault_authenticated', 'true');
+                unlockVault();
+            } else {
+                error.style.display = 'block';
+                // Animation de secousse du bouton ou input
+                const btn = document.querySelector('.unlock-btn');
+                btn.style.borderColor = 'var(--neon-pink)';
+                setTimeout(() => {
+                    error.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function unlockVault() {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('content-area').style.display = 'flex';
+            loadDiscordLinks();
+        }
+
+        // === PARSING ET CHARGEMENT DU TXT ===
         async function loadDiscordLinks() {
-            const container = document.getElementById('media-list');
+            const container = document.getElementById('content-area');
             
             try {
-                // On récupère le fichier liens.txt (situé dans le même dossier)
+                // Récupération de ton fichier txt hébergé au même endroit
                 const response = await fetch('liens.txt');
                 
                 if (!response.ok) {
-                    throw new Error('Impossible de charger le fichier de liens.');
+                    throw new Error('liens.txt indisponible.');
                 }
 
                 const text = await response.text();
-                
-                // Séparation du texte par ligne et nettoyage des espaces vides
                 const links = text.split('\n')
                                   .map(link => link.trim())
                                   .filter(link => link.length > 0);
 
                 if (links.length === 0) {
-                    container.innerHTML = '<div class="status-msg">Aucun lien trouvé dans le fichier.</div>';
+                    container.innerHTML = `
+                        <div class="status-msg">
+                            <i class="fa-solid fa-triangle-exclamation"></i><br>
+                            Aucun média actif dans la base de données.
+                        </div>`;
                     return;
                 }
 
-                // On vide le message de chargement
-                container.innerHTML = '';
+                container.innerHTML = ''; // Nettoyage du spinner de chargement
 
-                // Génération des cartes pour chaque lien
                 links.forEach((link, index) => {
-                    // Petite extraction propre pour afficher un "nom" de fichier basé sur la fin du lien Discord
+                    // Extraction et décodage du nom de fichier propre
                     const urlParts = link.split('/');
-                    let fileName = urlParts[urlParts.length - 1] || `Media #${index + 1}`;
-                    // Enlever les paramètres de tracking Discord si présents (?ex=...)
-                    fileName = fileName.split('?')[0]; 
+                    let rawFileName = urlParts[urlParts.length - 1] || `media_${index + 1}`;
+                    rawFileName = rawFileName.split('?')[0]; // Coupe le jeton d'accès Discord
+                    const cleanFileName = decodeURIComponent(rawFileName);
 
-                    // Détection rapide du type (optionnel, juste pour le style du tag)
-                    let type = "DISCORD LINK";
-                    if (link.match(/\.(jpeg|jpg|gif|png|webp)/i)) type = "IMAGE";
-                    if (link.match(/\.(mp4|webm|mov)/i)) type = "VIDEO";
+                    // Détermination du format
+                    let type = "FICHIER";
+                    let icon = "fa-file";
+                    let isImage = false;
+                    let isVideo = false;
 
-                    const card = document.createElement('a');
-                    card.href = link;
-                    card.target = '_blank'; // Ouvre dans un nouvel onglet
+                    if (link.match(/\.(jpeg|jpg|gif|png|webp)/i)) {
+                        type = "IMAGE";
+                        icon = "fa-image";
+                        isImage = true;
+                    } else if (link.match(/\.(mp4|webm|mov|ogg)/i)) {
+                        type = "VIDEO";
+                        icon = "fa-video";
+                        isVideo = true;
+                    } else if (link.match(/\.(mp3|wav|ogg)/i)) {
+                        type = "AUDIO";
+                        icon = "fa-headphones";
+                    }
+
+                    // Création de la carte média
+                    const card = document.createElement('div');
                     card.className = 'media-card';
-                    card.innerHTML = `
-                        <div class="media-tag">${type}</div>
-                        <div class="media-title">${decodeURIComponent(fileName)}</div>
+                    card.style.cursor = 'pointer';
+
+                    // Zone d'information (gauche)
+                    const infoArea = document.createElement('div');
+                    infoArea.className = 'media-info';
+                    infoArea.innerHTML = `
+                        <div class="media-tag">
+                            <i class="fa-solid ${icon}"></i> ${type}
+                        </div>
+                        <div class="media-title">${cleanFileName}</div>
                     `;
-                    
+                    card.appendChild(infoArea);
+
+                    // Zone d'aperçu dynamique (droite)
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'preview-wrapper';
+
+                    if (isImage) {
+                        // Utilisation directe du lien CDN Discord comme source d'image d'aperçu
+                        const imgPreview = document.createElement('img');
+                        imgPreview.src = link;
+                        imgPreview.className = 'preview-image';
+                        imgPreview.alt = 'Preview';
+                        // Image alternative si le CDN de Discord bloque temporairement le chargement
+                        imgPreview.onerror = function() {
+                            this.style.display = 'none';
+                            previewWrapper.innerHTML = `<div class="preview-fallback"><i class="fa-solid fa-image-broken"></i></div>`;
+                        };
+                        previewWrapper.appendChild(imgPreview);
+
+                        // Comportement au clic : Ouvre le lecteur interne (lightbox)
+                        card.onclick = (e) => {
+                            e.preventDefault();
+                            openLightbox(link, cleanFileName);
+                        };
+                    } else if (isVideo) {
+                        // Pour les vidéos : vignette noire avec symbole de lecture
+                        previewWrapper.innerHTML = `
+                            <div class="preview-fallback"><i class="fa-solid fa-video"></i></div>
+                            <div class="video-overlay-icon"><i class="fa-solid fa-play"></i></div>
+                        `;
+                        // Ouvre directement la vidéo dans un nouvel onglet
+                        card.onclick = () => window.open(link, '_blank');
+                    } else {
+                        // Par défaut (Audio ou autre document)
+                        previewWrapper.innerHTML = `<div class="preview-fallback"><i class="fa-solid ${icon}"></i></div>`;
+                        card.onclick = () => window.open(link, '_blank');
+                    }
+
+                    card.appendChild(previewWrapper);
                     container.appendChild(card);
                 });
 
             } catch (error) {
                 console.error(error);
-                container.innerHTML = '<div class="status-msg" style="color: var(--neon-pink)">Erreur : Vérifie que le fichier "liens.txt" existe à côté du fichier HTML.</div>';
+                container.innerHTML = `
+                    <div class="status-msg" style="color: var(--neon-pink)">
+                        <i class="fa-solid fa-circle-exclamation"></i><br>
+                        Échec de synchronisation. Veuillez vérifier que le fichier 'liens.txt' est accessible à la racine de votre GitHub Pages.
+                    </div>`;
             }
         }
 
-        // Lancement au chargement de la page
-        window.addEventListener('DOMContentLoaded', loadDiscordLinks);
+        // === ACTIONS LIGHTBOX ===
+        function openLightbox(url, title) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+            
+            img.src = url;
+            caption.textContent = title;
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
     </script>
 </body>
 </html>
