@@ -248,27 +248,31 @@
             box-shadow: 0 0 12px var(--neon-cyan);
         }
 
-        /* --- ZONE D'APERÇU IMAGE GRAND FORMAT --- */
+        /* --- ZONE D'APERÇU IMAGE SANS COMPRESSION / TAILLE ORIGINALE --- */
         .preview-wrapper {
             width: 100%;
-            height: 180px; /* Hauteur agrandie pour une visibilité maximale */
+            min-height: 180px;
+            max-height: 320px; /* Limite la hauteur maximale sur mobile pour un rendu équilibré */
             background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px; /* Un léger rembourrage pour éviter que l'image colle aux bords */
         }
 
         .preview-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Remplit l'espace de manière esthétique */
-            transition: transform 0.5s ease;
+            max-width: 100%;
+            max-height: 300px;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Conserve le ratio original, pas de compression, pas de rognage */
+            transition: transform 0.3s ease;
         }
 
         .media-card:hover .preview-image {
-            transform: scale(1.05); /* Effet zoom subtil au survol */
+            transform: scale(1.02); /* Effet zoom subtil sans dépasser */
         }
 
         .preview-fallback {
@@ -352,6 +356,7 @@
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 0 35px rgba(0, 243, 255, 0.3);
+            object-fit: contain; /* Conserve le ratio original aussi dans la lightbox */
         }
 
         .lightbox-caption {
