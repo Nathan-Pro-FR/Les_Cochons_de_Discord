@@ -9,7 +9,7 @@
     <style>
         :root {
             --bg-color: #05050a;
-            --card-bg: rgba(13, 13, 25, 0.8);
+            --card-bg: rgba(13, 13, 25, 0.85);
             --neon-cyan: #00f3ff;
             --neon-pink: #ff007f;
             --neon-purple: #9d4edd;
@@ -52,7 +52,7 @@
             backdrop-filter: blur(15px);
             margin: auto;
             position: relative;
-            min-height: 80vh;
+            min-height: 85vh;
             display: flex;
             flex-direction: column;
         }
@@ -203,58 +203,112 @@
         #content-area {
             display: none; /* Masqué par défaut jusqu'au déverrouillage */
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
             flex-grow: 1;
         }
 
-        /* Cartes de média révisées pour intégrer l'aperçu */
+        /* Cartes de média verticales avec grand aperçu */
         .media-card {
             background: var(--card-bg);
             border: 1px solid rgba(157, 78, 221, 0.4);
-            border-radius: 14px;
-            padding: 12px;
+            border-radius: 18px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
+            flex-direction: column; /* Format vertical demandé */
+            overflow: hidden;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             text-decoration: none;
             color: inherit;
             position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
+        /* Effet de bordure néon au survol */
         .media-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 3px;
-            height: 100%;
+            width: 100%;
+            height: 3px;
             background: var(--neon-purple);
             box-shadow: 0 0 8px var(--neon-purple);
             transition: all 0.3s ease;
+            z-index: 2;
         }
 
         .media-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
-            background: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            background: rgba(15, 23, 42, 0.95);
         }
 
         .media-card:hover::before {
             background: var(--neon-cyan);
-            box-shadow: 0 0 10px var(--neon-cyan);
+            box-shadow: 0 0 12px var(--neon-cyan);
         }
 
+        /* --- ZONE D'APERÇU IMAGE GRAND FORMAT --- */
+        .preview-wrapper {
+            width: 100%;
+            height: 180px; /* Hauteur agrandie pour une visibilité maximale */
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Remplit l'espace de manière esthétique */
+            transition: transform 0.5s ease;
+        }
+
+        .media-card:hover .preview-image {
+            transform: scale(1.05); /* Effet zoom subtil au survol */
+        }
+
+        .preview-fallback {
+            font-size: 2.2rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px var(--neon-cyan);
+            opacity: 0.8;
+        }
+
+        /* Icône play centrée pour les vidéos */
+        .video-overlay-icon {
+            position: absolute;
+            font-size: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .media-card:hover .video-overlay-icon {
+            background: var(--neon-pink);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
+            transform: scale(1.1);
+        }
+
+        /* --- DESIGN INFOS DESSOUS --- */
         .media-info {
+            padding: 14px 16px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            flex-grow: 1;
-            min-width: 0; /* Important pour le text-overflow */
+            gap: 6px;
+            background: rgba(10, 10, 20, 0.5);
         }
 
         .media-tag {
@@ -262,59 +316,21 @@
             text-transform: uppercase;
             font-weight: 800;
             color: var(--neon-pink);
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .media-title {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            color: #e2e8f0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #f1f5f9;
+            word-break: break-all; /* Évite que le nom du fichier ne casse l'affichage */
+            line-height: 1.4;
         }
 
-        /* --- ZONE D'APERÇU IMAGE/MÉDIA --- */
-        .preview-wrapper {
-            width: 55px;
-            height: 55px;
-            min-width: 55px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .preview-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .preview-fallback {
-            font-size: 1.2rem;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 5px var(--neon-cyan);
-        }
-
-        /* Lecteur audio/vidéo rapide */
-        .video-overlay-icon {
-            position: absolute;
-            font-size: 0.8rem;
-            background: rgba(0,0,0,0.6);
-            padding: 4px;
-            border-radius: 50%;
-            color: #fff;
-        }
-
-        /* --- LIGHTBOX (Lecteur plein écran interactif) --- */
+        /* --- LIGHTBOX (Lecteur plein écran) --- */
         .lightbox {
             position: fixed;
             top: 0;
@@ -331,11 +347,11 @@
         }
 
         .lightbox-content {
-            max-width: 90%;
-            max-height: 70vh;
+            max-width: 95%;
+            max-height: 75vh;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.3);
         }
 
         .lightbox-caption {
@@ -354,7 +370,7 @@
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #fff;
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.2rem;
@@ -363,7 +379,7 @@
 
         .lightbox-close:hover {
             background: var(--neon-pink);
-            box-shadow: 0 0 10px var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
         }
 
         /* Statuts & Chargements */
@@ -371,7 +387,7 @@
             text-align: center;
             color: var(--text-muted);
             font-style: italic;
-            padding: 25px;
+            padding: 35px;
             font-size: 0.9rem;
         }
 
@@ -400,20 +416,20 @@
             
             <div class="input-group">
                 <i class="fa-solid fa-key input-icon"></i>
-                <input type="password" id="passkey" class="password-input" placeholder="••••" maxlength="12" autofocus>
+                <input type="password" id="passkey" class="password-input" placeholder="••••" maxlength="20" autofocus>
             </div>
 
             <button class="unlock-btn" onclick="checkPassword()">Accéder au Flux</button>
             <div class="error-msg" id="error-message">Système verrouillé : Code incorrect</div>
         </div>
 
-        <!-- EN-TÊTE PRINCIPAL (VISIBLE APRÈS CODE) -->
+        <!-- EN-TÊTE PRINCIPAL -->
         <header>
             <h1>Discord Vault</h1>
             <p class="subtitle"><i class="fa-solid fa-bolt"></i> Live Stream</p>
         </header>
 
-        <!-- ZONE DE LISTE DES MÉDIAS -->
+        <!-- ZONE DE LISTE DES MÉDIAS (GRID VERTICALE) -->
         <main id="content-area">
             <div class="status-msg">
                 <i class="fa-solid fa-circle-notch fa-spin"></i> Initialisation de la connexion sécurisée...
@@ -421,7 +437,7 @@
         </main>
     </div>
 
-    <!-- LIGHTBOX SÉCURISÉE (Pour voir l'image en grand sans quitter l'appli) -->
+    <!-- LIGHTBOX (Aperçu plein écran interactif) -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <button class="lightbox-close" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
         <img id="lightbox-img" class="lightbox-content" src="" alt="Aperçu grand format">
@@ -429,18 +445,17 @@
     </div>
 
     <script>
-        // === CONFIGURATION DU MOT DE PASSE ===
-        // Change ce mot de passe par ce que tu veux :
-        const SITE_PASSWORD = "1234"; 
+        // === CONFIGURATION DU NOUVEAU MOT DE PASSE ===
+        const SITE_PASSWORD = "NekuTeto123"; 
 
-        // Initialisation de l'affichage
+        // Gestion de la touche "Entrer"
         document.getElementById('passkey').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 checkPassword();
             }
         });
 
-        // Vérification automatique au cas où l'utilisateur est déjà connecté sur cette session
+        // Auto-déverrouillage si déjà identifié dans cette session de navigation
         if (sessionStorage.getItem('vault_authenticated') === 'true') {
             unlockVault();
         }
@@ -454,7 +469,6 @@
                 unlockVault();
             } else {
                 error.style.display = 'block';
-                // Animation de secousse du bouton ou input
                 const btn = document.querySelector('.unlock-btn');
                 btn.style.borderColor = 'var(--neon-pink)';
                 setTimeout(() => {
@@ -495,13 +509,13 @@
                     return;
                 }
 
-                container.innerHTML = ''; // Nettoyage du spinner de chargement
+                container.innerHTML = ''; // Nettoyage de l'écran de chargement
 
                 links.forEach((link, index) => {
                     // Extraction et décodage du nom de fichier propre
                     const urlParts = link.split('/');
                     let rawFileName = urlParts[urlParts.length - 1] || `media_${index + 1}`;
-                    rawFileName = rawFileName.split('?')[0]; // Coupe le jeton d'accès Discord
+                    rawFileName = rawFileName.split('?')[0]; // Enlever les jetons temporaires de Discord
                     const cleanFileName = decodeURIComponent(rawFileName);
 
                     // Détermination du format
@@ -528,7 +542,41 @@
                     card.className = 'media-card';
                     card.style.cursor = 'pointer';
 
-                    // Zone d'information (gauche)
+                    // Zone d'aperçu dynamique (HAUT)
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'preview-wrapper';
+
+                    if (isImage) {
+                        const imgPreview = document.createElement('img');
+                        imgPreview.src = link;
+                        imgPreview.className = 'preview-image';
+                        imgPreview.alt = 'Preview';
+                        // Image alternative si le CDN de Discord bloque ou est hors-ligne
+                        imgPreview.onerror = function() {
+                            this.style.display = 'none';
+                            previewWrapper.innerHTML = `<div class="preview-fallback"><i class="fa-solid fa-image-broken"></i></div>`;
+                        };
+                        previewWrapper.appendChild(imgPreview);
+
+                        // Ouvre la Lightbox au clic sur la carte
+                        card.onclick = (e) => {
+                            e.preventDefault();
+                            openLightbox(link, cleanFileName);
+                        };
+                    } else if (isVideo) {
+                        previewWrapper.innerHTML = `
+                            <div class="preview-fallback"><i class="fa-solid fa-video"></i></div>
+                            <div class="video-overlay-icon"><i class="fa-solid fa-play"></i></div>
+                        `;
+                        // Ouvre directement la vidéo dans un nouvel onglet
+                        card.onclick = () => window.open(link, '_blank');
+                    } else {
+                        // Pour les autres médias (Audio, documents, etc.)
+                        previewWrapper.innerHTML = `<div class="preview-fallback"><i class="fa-solid ${icon}"></i></div>`;
+                        card.onclick = () => window.open(link, '_blank');
+                    }
+
+                    // Zone d'information et nom du fichier (DESSOUS)
                     const infoArea = document.createElement('div');
                     infoArea.className = 'media-info';
                     infoArea.innerHTML = `
@@ -537,45 +585,10 @@
                         </div>
                         <div class="media-title">${cleanFileName}</div>
                     `;
-                    card.appendChild(infoArea);
 
-                    // Zone d'aperçu dynamique (droite)
-                    const previewWrapper = document.createElement('div');
-                    previewWrapper.className = 'preview-wrapper';
-
-                    if (isImage) {
-                        // Utilisation directe du lien CDN Discord comme source d'image d'aperçu
-                        const imgPreview = document.createElement('img');
-                        imgPreview.src = link;
-                        imgPreview.className = 'preview-image';
-                        imgPreview.alt = 'Preview';
-                        // Image alternative si le CDN de Discord bloque temporairement le chargement
-                        imgPreview.onerror = function() {
-                            this.style.display = 'none';
-                            previewWrapper.innerHTML = `<div class="preview-fallback"><i class="fa-solid fa-image-broken"></i></div>`;
-                        };
-                        previewWrapper.appendChild(imgPreview);
-
-                        // Comportement au clic : Ouvre le lecteur interne (lightbox)
-                        card.onclick = (e) => {
-                            e.preventDefault();
-                            openLightbox(link, cleanFileName);
-                        };
-                    } else if (isVideo) {
-                        // Pour les vidéos : vignette noire avec symbole de lecture
-                        previewWrapper.innerHTML = `
-                            <div class="preview-fallback"><i class="fa-solid fa-video"></i></div>
-                            <div class="video-overlay-icon"><i class="fa-solid fa-play"></i></div>
-                        `;
-                        // Ouvre directement la vidéo dans un nouvel onglet
-                        card.onclick = () => window.open(link, '_blank');
-                    } else {
-                        // Par défaut (Audio ou autre document)
-                        previewWrapper.innerHTML = `<div class="preview-fallback"><i class="fa-solid ${icon}"></i></div>`;
-                        card.onclick = () => window.open(link, '_blank');
-                    }
-
+                    // Ajout au DOM dans le bon ordre : Aperçu d'abord, Infos ensuite !
                     card.appendChild(previewWrapper);
+                    card.appendChild(infoArea);
                     container.appendChild(card);
                 });
 
