@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Media Hub</title>
+    <style>
+        :root {
+            --bg-color: #0a0a12;
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff007f;
+            --neon-purple: #9d4edd;
+            --text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Simulation du format Mobile Container */
+        .mobile-container {
+            width: 100%;
+            max-width: 412px; /* Taille standard d'un smartphone moderne */
+            background: rgba(15, 15, 30, 0.75);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 24px;
+            padding: 25px 20px;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2),
+                        inset 0 0 15px rgba(0, 243, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Header Néon */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 5px #fff,
+                         0 0 10px var(--neon-pink),
+                         0 0 20px var(--neon-pink),
+                         0 0 40px var(--neon-pink);
+            animation: pulse 2s infinite alternate;
+        }
+
+        p.subtitle {
+            font-size: 0.85rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Liste des médias */
+        #media-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* Cartes de liens style Néon */
+        .media-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--neon-purple);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .media-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--neon-purple);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .media-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .media-card:hover::before {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .media-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--neon-pink);
+            letter-spacing: 1px;
+        }
+
+        .media-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Message de chargement / erreur */
+        .status-msg {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        /* Animation de pulsation pour le titre */
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink); }
+            100% { text-shadow: 0 0 7px #fff, 0 0 15px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 50px var(--neon-pink); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <header>
+            <h1>Discord Vault</h1>
+            <p class="subtitle">Media Stream</p>
+        </header>
+
+        <main id="media-list">
+            <div class="status-msg">Chargement des flux énergétiques...</div>
+        </main>
+    </div>
+
+    <script>
+        // Fonction pour charger et lire le fichier .txt
+        async function loadDiscordLinks() {
+            const container = document.getElementById('media-list');
+            
+            try {
+                // On récupère le fichier liens.txt (situé dans le même dossier)
+                const response = await fetch('liens.txt');
+                
+                if (!response.ok) {
+                    throw new Error('Impossible de charger le fichier de liens.');
+                }
+
+                const text = await response.text();
+                
+                // Séparation du texte par ligne et nettoyage des espaces vides
+                const links = text.split('\n')
+                                  .map(link => link.trim())
+                                  .filter(link => link.length > 0);
+
+                if (links.length === 0) {
+                    container.innerHTML = '<div class="status-msg">Aucun lien trouvé dans le fichier.</div>';
+                    return;
+                }
+
+                // On vide le message de chargement
+                container.innerHTML = '';
+
+                // Génération des cartes pour chaque lien
+                links.forEach((link, index) => {
+                    // Petite extraction propre pour afficher un "nom" de fichier basé sur la fin du lien Discord
+                    const urlParts = link.split('/');
+                    let fileName = urlParts[urlParts.length - 1] || `Media #${index + 1}`;
+                    // Enlever les paramètres de tracking Discord si présents (?ex=...)
+                    fileName = fileName.split('?')[0]; 
+
+                    // Détection rapide du type (optionnel, juste pour le style du tag)
+                    let type = "DISCORD LINK";
+                    if (link.match(/\.(jpeg|jpg|gif|png|webp)/i)) type = "IMAGE";
+                    if (link.match(/\.(mp4|webm|mov)/i)) type = "VIDEO";
+
+                    const card = document.createElement('a');
+                    card.href = link;
+                    card.target = '_blank'; // Ouvre dans un nouvel onglet
+                    card.className = 'media-card';
+                    card.innerHTML = `
+                        <div class="media-tag">${type}</div>
+                        <div class="media-title">${decodeURIComponent(fileName)}</div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="status-msg" style="color: var(--neon-pink)">Erreur : Vérifie que le fichier "liens.txt" existe à côté du fichier HTML.</div>';
+            }
+        }
+
+        // Lancement au chargement de la page
+        window.addEventListener('DOMContentLoaded', loadDiscordLinks);
+    </script>
+</body>
+</html>
